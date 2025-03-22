@@ -1,0 +1,101 @@
+import java.io.*;
+import java.util.Scanner;
+
+public class SimpleFileEncryptDecrypt {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Select an option: ");
+        System.out.println("1. Encrypt a file");
+        System.out.println("2. Decrypt a file");
+
+        int option = scanner.nextInt();
+        scanner.nextLine();  // Consume newline
+
+        System.out.print("Enter the file name: ");
+        String fileName = scanner.nextLine();
+
+        System.out.print("Enter the shift value: ");
+        int shiftValue = scanner.nextInt();
+
+        if (option == 1) {
+            encryptFile(fileName, shiftValue);
+        } else if (option == 2) {
+            decryptFile(fileName, shiftValue);
+        } else {
+            System.out.println("Invalid option selected.");
+        }
+
+        scanner.close();
+    }
+
+    public static void encryptFile(String fileName, int shiftValue) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            StringBuilder fileContent = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                fileContent.append(line).append("\n");
+            }
+            reader.close();
+
+            String encryptedContent = encryptContent(fileContent.toString(), shiftValue);
+
+            String encryptedFileName = "encrypted_" + fileName;
+            BufferedWriter writer = new BufferedWriter(new FileWriter(encryptedFileName));
+            writer.write(encryptedContent);
+            writer.close();
+
+            System.out.println("File encrypted successfully. Saved as " + encryptedFileName);
+
+        } catch (IOException e) {
+            System.out.println("Error reading or writing file: " + e.getMessage());
+        }
+    }
+
+    public static void decryptFile(String fileName, int shiftValue) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            StringBuilder fileContent = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                fileContent.append(line).append("\n");
+            }
+            reader.close();
+
+            String decryptedContent = decryptContent(fileContent.toString(), shiftValue);
+
+            String decryptedFileName = "decrypted_" + fileName;
+            BufferedWriter writer = new BufferedWriter(new FileWriter(decryptedFileName));
+            writer.write(decryptedContent);
+            writer.close();
+
+            System.out.println("File decrypted successfully. Saved as " + decryptedFileName);
+
+        } catch (IOException e) {
+            System.out.println("Error reading or writing file: " + e.getMessage());
+        }
+    }
+
+    public static String encryptContent(String content, int shift) {
+        return caesarCipher(content, shift);
+    }
+
+    public static String decryptContent(String content, int shift) {
+        return caesarCipher(content, -shift);
+    }
+
+    private static String caesarCipher(String text, int shift) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (Character.isLetter(c)) {
+                char base = Character.isLowerCase(c) ? 'a' : 'A';
+                c = (char) ((c - base + shift) % 26 + base);
+            }
+            result.append(c);
+        }
+        return result.toString();
+    }
+}
